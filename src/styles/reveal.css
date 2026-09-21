@@ -1,0 +1,129 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- Sequential reveal: data-reveal="sequence" on any container makes its
+   direct children appear one by one on "advance" — works for ul/ol just as
+   well as for divs. Named variants below are structurally modeled on
+   scratch/stage/src/style/presentation.css's .fragment vocabulary: add the
+   variant as an extra class on the child (e.g. <li class="fade-up">) —
+   setupFragments() still auto-detects any direct child of [data-reveal]
+   regardless of variant, no extra JS wiring needed per item. ---- */
+.reveal-item {
+  --edodeck-fragment-x: 0px;
+  --edodeck-fragment-y: 14px;
+  --edodeck-fragment-scale: 1;
+  opacity: 0;
+  transform: translate(var(--edodeck-fragment-x), var(--edodeck-fragment-y)) scale(var(--edodeck-fragment-scale));
+  transition: opacity 320ms ease, transform 320ms ease, color 320ms ease;
+}
+.reveal-item.revealed {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-item {
+    transition: none !important;
+  }
+}
+
+[data-reveal] {
+  list-style-position: inside;
+  font-size: 22px;
+  color: var(--edodeck-foreground);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* Directional entrance — just swaps which axis/direction the fragment
+   travels in from. */
+.reveal-item.fade-up {
+  --edodeck-fragment-y: 22px;
+}
+.reveal-item.fade-down {
+  --edodeck-fragment-y: -22px;
+}
+.reveal-item.fade-left {
+  --edodeck-fragment-x: 22px;
+  --edodeck-fragment-y: 0px;
+}
+.reveal-item.fade-right {
+  --edodeck-fragment-x: -22px;
+  --edodeck-fragment-y: 0px;
+}
+
+/* Scale-in instead of slide-in. */
+.reveal-item.grow {
+  opacity: 1;
+  transform: scale(0.8);
+}
+.reveal-item.grow.revealed {
+  transform: scale(1);
+}
+.reveal-item.shrink {
+  opacity: 1;
+  transform: scale(1.2);
+}
+.reveal-item.shrink.revealed {
+  transform: scale(1);
+}
+
+/* Inverse reveal: visible from the start, hides on advance. */
+.reveal-item.fade-out {
+  opacity: 1;
+  transform: none;
+}
+.reveal-item.fade-out.revealed {
+  opacity: 0;
+}
+
+/* Text-effect fragments: content is visible immediately, "reveal" only
+   applies the effect (a struck-through todo item, a highlighted term). */
+.reveal-item.strike,
+.reveal-item.highlight-accent,
+.reveal-item.highlight-success,
+.reveal-item.highlight-error {
+  opacity: 1;
+  transform: none;
+}
+.reveal-item.strike.revealed {
+  text-decoration: line-through;
+}
+.reveal-item.highlight-accent.revealed {
+  color: var(--edodeck-accent);
+}
+.reveal-item.highlight-success.revealed {
+  color: var(--edodeck-success);
+}
+.reveal-item.highlight-error.revealed {
+  color: var(--edodeck-error);
+}
+
+/* Current-only visibility: needs the .current class from
+   core/fragments.ts (always the most recently revealed item). Good for
+   walking through a list one point at a time without older points
+   lingering (fade-in-then-out) or with them dimmed rather than gone
+   (fade-in-then-semi-out — "highlight the point I'm on, dim the rest"). */
+.reveal-item.fade-in-then-out {
+  opacity: 0;
+}
+.reveal-item.fade-in-then-out.revealed {
+  opacity: 0;
+}
+.reveal-item.fade-in-then-out.revealed.current {
+  opacity: 1;
+}
+
+.reveal-item.fade-in-then-semi-out {
+  opacity: 0;
+}
+.reveal-item.fade-in-then-semi-out.revealed {
+  opacity: 0.35;
+}
+.reveal-item.fade-in-then-semi-out.revealed.current {
+  opacity: 1;
+}

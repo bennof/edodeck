@@ -1,0 +1,68 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- Slide enter/settle transitions, structurally modeled on
+   scratch/stage/src/style/presentation.css (CSS-custom-property-driven
+   states, named variants selected via a data attribute, prefers-reduced-
+   motion support).
+
+   Adapted to fit edodeck's scroll-snap navigation rather than copying
+   stage's model outright: stage absolutely-stacks every slide on top of
+   each other and drives .past/.present/.future purely via JS-managed
+   classes and transform (no native scrolling at all), which is what makes
+   its 3D page-turn variants (convex/concave) possible. edodeck instead
+   keeps slide position entirely native — advance()/retreat() still call
+   scrollIntoView() (see core/deck.ts) so free scroll/swipe keeps working
+   unchanged. This file only layers a cosmetic opacity/transform "settle
+   in" on top of that, toggled via .slide-active as the IntersectionObserver
+   crosses the active-slide threshold. Because there's no real absolute
+   positioning, direction-aware or 3D variants don't have a meaningful
+   equivalent here — only fade/scale/offset style entrances. ---- */
+.slide {
+  --edodeck-slide-enter-opacity: 0;
+  --edodeck-slide-enter-transform: translateY(32px) scale(0.96);
+  transition: opacity 420ms ease, transform 420ms ease;
+}
+
+/* The hidden "before entering" state is only applied where JavaScript runs
+   and will reveal the slide again (.slide-active). Without scripting — or in
+   a browser that doesn't know the media feature — slides simply stay
+   visible, so the content is readable (see noscript.css). */
+@media (scripting: enabled) {
+  .slide {
+    opacity: var(--edodeck-slide-enter-opacity);
+    transform: var(--edodeck-slide-enter-transform);
+  }
+}
+
+.slide.slide-active {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide {
+    transition: none !important;
+  }
+}
+
+/* Named variants — set via data-transition="..." on the <section>. */
+.slide[data-transition='fade'] {
+  --edodeck-slide-enter-transform: none;
+}
+
+.slide[data-transition='zoom'] {
+  --edodeck-slide-enter-transform: scale(0.85);
+}
+
+.slide[data-transition='rise'] {
+  --edodeck-slide-enter-transform: translateY(56px);
+}
+
+.slide[data-transition='none'] {
+  transition: none !important;
+  --edodeck-slide-enter-opacity: 1;
+  --edodeck-slide-enter-transform: none;
+}

@@ -1,0 +1,84 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- Drawing layer: the canvas sits over every slide, but only captures
+   pointer events in drawing mode (otherwise scroll/tap on the slide stay
+   undisturbed). touch-action:none prevents the browser's scroll/zoom
+   gestures while drawing. ---- */
+#annotate-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  touch-action: none;
+}
+#stage.annotate-mode #annotate-canvas {
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+#annotate-toolbar {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: rgba(24, 24, 30, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 8px 12px;
+  transform-origin: top right;
+  transform: scale(var(--stage-counter-scale, 1));
+}
+#stage.annotate-mode #annotate-toolbar {
+  display: flex;
+}
+
+.swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.swatch.active {
+  border-color: #fff;
+}
+
+.annotate-tool-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--edodeck-chrome-fg);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+.annotate-tool-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.annotate-tool-btn.active {
+  background: rgba(111, 168, 255, 0.25);
+  border-color: var(--edodeck-chrome-accent);
+}
+
+/* Per-slide image layer for the saved drawing state — invisible during
+   normal operation, only shown for print (see @media print in print.css). */
+.print-annotation-layer {
+  display: none;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

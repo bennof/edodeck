@@ -1,0 +1,10 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Prototypes and ideas, not part of the repository
+scratch/
+
+# Working notes, not part of the repository
+TODO.md

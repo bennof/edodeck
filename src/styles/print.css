@@ -1,0 +1,96 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- Print view: every slide becomes its own page, all fragments are
+   forced visible, UI controls disappear, and the saved drawings are shown
+   per slide. Note: for background images/colors, "print background
+   graphics" must be enabled in the print dialog, otherwise the browser
+   suppresses them by default. ---- */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  /* Force a fixed light, high-contrast palette regardless of the active
+     screen theme — printed paper is always white, so dark-theme foreground
+     colors (light text) would otherwise be nearly invisible on it. */
+  :root {
+    --edodeck-background: #ffffff;
+    --edodeck-foreground: #111111;
+    --edodeck-muted: #444444;
+    --edodeck-accent: #2f5fd6;
+    --edodeck-border: #cccccc;
+    --edodeck-error: #c23636;
+    --edodeck-success: #1f9d4f;
+  }
+
+  html,
+  body {
+    overflow: visible;
+    background: #fff;
+  }
+
+  #viewport {
+    position: static;
+    overflow: visible;
+  }
+  #stage {
+    position: static !important;
+    transform: none !important;
+    width: 100% !important;
+    height: 100vh !important;
+    box-shadow: none;
+  }
+  #deck {
+    overflow: visible;
+    height: auto;
+  }
+
+  .slide {
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: none;
+    page-break-after: always;
+    break-after: page;
+    /* Every slide is its own page in print — the .slide-active enter
+       transition (see transitions.css) is a live-only concept. */
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  /* Force all fragments visible in print — regardless of live progress */
+  .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  #fab-menu,
+  #dots,
+  #progress,
+  #timer-ring,
+  #notes-debug,
+  #annotate-toolbar,
+  #annotate-canvas,
+  .yt-play,
+  .yt-auto-badge,
+  .yt-embed iframe {
+    display: none !important;
+  }
+
+  .print-annotation-layer {
+    display: block;
+  }
+
+  /* The video itself isn't playable in print — show the QR code fallback
+     instead of the thumbnail (see .yt-print-qr in youtube.css). */
+  .yt-embed {
+    background-image: none !important;
+  }
+  .yt-print-qr {
+    display: flex;
+  }
+}

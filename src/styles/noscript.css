@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- Without JavaScript the deck is a plain page: the slides are ordinary
+   HTML sections, so they are laid out one below the other and can simply be
+   scrolled and read — the scaled stage, scroll-snap and everything else is
+   JavaScript's job. (Also what a crawler or a reader without scripting gets.)
+   Browsers that don't know (scripting: none) keep the normal layout. ---- */
+@media (scripting: none) {
+  html:has(#viewport:not(.inline)),
+  body:has(#viewport:not(.inline)) {
+    height: auto;
+    overflow: auto;
+  }
+
+  #viewport,
+  #viewport.inline {
+    position: static;
+    width: auto;
+    aspect-ratio: auto;
+    overflow: visible;
+  }
+
+  #stage {
+    position: static;
+    width: auto;
+    height: auto;
+    transform: none;
+    box-shadow: none;
+  }
+
+  #deck {
+    height: auto;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .slide {
+    height: auto;
+    min-height: 40vh;
+    scroll-snap-align: none;
+    border-bottom: 1px solid var(--edodeck-border);
+  }
+
+  /* Filled in by JavaScript (thumbnail, player) — empty without it. */
+  .yt-embed {
+    display: none;
+  }
+}

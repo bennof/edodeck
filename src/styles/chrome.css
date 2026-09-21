@@ -1,0 +1,114 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- UI chrome: deliberately OUTSIDE the stage scaling, so controls stay
+   the same size & tappable on every device. position:fixed anchors these to
+   the browser window in the default fullscreen mode; in #viewport.inline
+   mode (base.css) they're children of #viewport instead (see
+   examples/demo.html) and the override below switches them to
+   position:absolute so they anchor to #viewport rather than escaping to the
+   window — offsets stay identical either way, only `position` changes.
+   z-index:40 keeps them above the fab menu (30) and annotate layer (25/30)
+   in both modes, matching how they always painted on top before (as later
+   siblings of #viewport, outside its stacking context, in fullscreen
+   mode). ---- */
+#progress {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  z-index: 40;
+}
+#progress-bar {
+  height: 100%;
+  background: var(--edodeck-chrome-accent);
+  width: 0%;
+  transition: width 200ms ease;
+}
+
+#dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 40;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: background 200ms ease, transform 200ms ease;
+  cursor: pointer;
+}
+.dot.active {
+  background: var(--edodeck-chrome-accent);
+  transform: scale(1.3);
+}
+
+#timer-ring {
+  position: fixed;
+  left: 24px;
+  bottom: 28px;
+  width: 34px;
+  height: 34px;
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+#timer-ring.active {
+  opacity: 1;
+}
+#timer-ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+#timer-ring .track {
+  stroke: rgba(255, 255, 255, 0.12);
+}
+#timer-ring .fill {
+  stroke: var(--edodeck-chrome-accent);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+#notes-debug {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  max-width: 340px;
+  font-size: 13px;
+  color: var(--edodeck-chrome-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  z-index: 40;
+  display: none;
+}
+#notes-debug.visible {
+  display: block;
+}
+#notes-debug b {
+  color: var(--edodeck-chrome-fg);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.inline #progress,
+.inline #dots,
+.inline #timer-ring,
+.inline #notes-debug {
+  position: absolute;
+}

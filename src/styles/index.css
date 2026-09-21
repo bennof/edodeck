@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+@import './theme.css';
+@import './base.css';
+@import './transitions.css';
+@import './reveal.css';
+@import './chrome.css';
+@import './fab-menu.css';
+@import './youtube.css';
+@import './annotate.css';
+@import './math.css';
+@import './noscript.css';
+@import './print.css';

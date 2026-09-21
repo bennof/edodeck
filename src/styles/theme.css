@@ -1,0 +1,110 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- Design tokens: semantic color theme with light/dark support, modeled
+   on scratch/stage/src/style/mode.css — with one deliberate correction: that
+   file defines its default values as a self-reference, e.g.
+   `--stage-background: var(--stage-background, #ffffff);`, intending "use
+   whatever a host page already set, else fall back to this default." Tested
+   directly (a `:root { --x: var(--x, red); }` page renders fully
+   transparent, not red) — a custom property that references itself is
+   cyclic and resolves to its guaranteed-invalid value, which the var()
+   fallback does NOT rescue when the cycle is the property's OWN winning
+   declaration. So stage's mode.css most likely never actually painted
+   anything (consistent with it being an unfinished prototype whose render
+   loop is never invoked either). Below, defaults are plain literals
+   instead — a host page can still override any of these the ordinary CSS
+   way (higher specificity, or a stylesheet loaded after this one), no
+   special trick needed for that.
+
+   Two mechanisms:
+   1) -light/-dark suffixed tokens hold the actual color values; the
+      unsuffixed token (e.g. --edodeck-background) is what the rest of the
+      library actually consumes, and gets pointed at one or the other.
+   2) light/dark switches automatically via prefers-color-scheme, and can be
+      forced with a .light / .dark class on any ancestor (including
+      <html>/<body>).
+   Note the direction is inverted from the stage reference: edodeck's
+   already-shipped look IS the dark palette, so DARK is the default when no
+   preference is signaled (older browsers, embeds that don't expose
+   prefers-color-scheme) — prefers-color-scheme:light and .light are what
+   opt into the light palette, not the other way around. ---- */
+:root {
+  color-scheme: dark light;
+
+  --edodeck-background-dark: #14141a;
+  --edodeck-foreground-dark: #e9e7e1;
+  --edodeck-muted-dark: #8a8a94;
+  --edodeck-accent-dark: #6fa8ff;
+  --edodeck-border-dark: #2a2a33;
+  --edodeck-error-dark: #d9534f;
+  --edodeck-success-dark: #3fb968;
+
+  --edodeck-background-light: #ffffff;
+  --edodeck-foreground-light: #17171c;
+  --edodeck-muted-light: #63636d;
+  --edodeck-accent-light: #2f5fd6;
+  --edodeck-border-light: #e4e4e9;
+  --edodeck-error-light: #c23636;
+  --edodeck-success-light: #1f9d4f;
+
+  /* Default when no preference is signaled: dark. */
+  --edodeck-background: var(--edodeck-background-dark);
+  --edodeck-foreground: var(--edodeck-foreground-dark);
+  --edodeck-muted: var(--edodeck-muted-dark);
+  --edodeck-accent: var(--edodeck-accent-dark);
+  --edodeck-border: var(--edodeck-border-dark);
+  --edodeck-error: var(--edodeck-error-dark);
+  --edodeck-success: var(--edodeck-success-dark);
+
+  /* Backdrop behind the stage (letterboxing) — a touch darker/lighter than
+     the stage itself, derived rather than a separate hand-picked color. */
+  --edodeck-backdrop: color-mix(in srgb, var(--edodeck-background) 88%, black);
+
+  /* Floating UI chrome (FAB menu, annotate toolbar, notes panel, progress,
+     dots, timer ring) is deliberately NOT part of this theme: it overlays
+     arbitrary slide content, which can be bright even on an otherwise dark
+     deck, so it always stays a fixed dark-glass overlay for legibility —
+     the same reasoning a video player's control bar follows. */
+  --edodeck-chrome-fg: #e9e7e1;
+  --edodeck-chrome-muted: #8a8a94;
+  --edodeck-chrome-accent: #6fa8ff;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --edodeck-background: var(--edodeck-background-light);
+    --edodeck-foreground: var(--edodeck-foreground-light);
+    --edodeck-muted: var(--edodeck-muted-light);
+    --edodeck-accent: var(--edodeck-accent-light);
+    --edodeck-border: var(--edodeck-border-light);
+    --edodeck-error: var(--edodeck-error-light);
+    --edodeck-success: var(--edodeck-success-light);
+  }
+}
+
+.light,
+html.light,
+body.light {
+  --edodeck-background: var(--edodeck-background-light);
+  --edodeck-foreground: var(--edodeck-foreground-light);
+  --edodeck-muted: var(--edodeck-muted-light);
+  --edodeck-accent: var(--edodeck-accent-light);
+  --edodeck-border: var(--edodeck-border-light);
+  --edodeck-error: var(--edodeck-error-light);
+  --edodeck-success: var(--edodeck-success-light);
+}
+
+.dark,
+html.dark,
+body.dark {
+  --edodeck-background: var(--edodeck-background-dark);
+  --edodeck-foreground: var(--edodeck-foreground-dark);
+  --edodeck-muted: var(--edodeck-muted-dark);
+  --edodeck-accent: var(--edodeck-accent-dark);
+  --edodeck-border: var(--edodeck-border-dark);
+  --edodeck-error: var(--edodeck-error-dark);
+  --edodeck-success: var(--edodeck-success-dark);
+}

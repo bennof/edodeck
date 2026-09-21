@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!--
+  Copyright (c) 2026 Benjamin Benno Falkner
+  SPDX-License-Identifier: MIT
+-->
+<!--
+  edodeck — Demo-Seite (Deutsch; englische Version: demo.html)
+
+  Zeigt, wie eine gebaute edodeck-Präsentation in eine Seite eingebettet
+  wird: ein <link> auf dist/edodeck.css, ein <script> auf
+  dist/edodeck.global.js (IIFE, globaler Name "EdoDeck"), das Folien-Markup
+  und ein Aufruf von EdoDeck.init() (in demo.js). Das Markup besteht nur aus
+  #viewport > #stage > #deck > .slide — die Oberfläche drumherum
+  (Zeichenfläche, Menü, Fortschrittsbalken, Punkte, Timer-Ring,
+  Notizen-Panel) erzeugt init(). Deren Texte folgen dem lang-Attribut unten.
+  Vorher "npm run build" ausführen (oder "npm run dev" für einen lokalen
+  Server), damit dist/ existiert.
+
+  Alles innerhalb von #deck ist reines Beispiel-Markup, kein Teil der
+  Library. Auch demo.js ist Demo-Code: der Mount "Dynamisches Element"
+  (demo-orbit), der synthetisierte Klick-Sound und der Theme-Toggle (oben
+  rechts), der das Theme von außen per .light/.dark-Klasse auf <html>
+  erzwingt — die Library hat keinen eigenen Toggle. Einige Folien tragen
+  data-transition="fade|zoom|rise|none", um die Übergänge auszuprobieren
+  (Standard: sanftes Hochkommen mit leichtem Zoom).
+
+  Ton: data-music auf einer Folie blendet per Crossfade zu diesem Track,
+  sobald sie aktiv wird; data-sound auf einem Fragment spielt beim Aufdecken
+  einen Effekt. Beides schaltet EdoDeck.init({ sound: { assets: [...] } })
+  ein. Die beiden Musikstücke in audio/ (beach-groovin.mp3,
+  sunset-serenade.mp3) wurden mit Suno (suno.com) erzeugt. Dafür gibt es
+  keine kommerzielle Lizenz, alle Rechte liegen bei Suno; sie fallen nicht
+  unter die MIT-Lizenz dieses Projekts und sind nur hier, um die
+  Sound-Funktion zu zeigen. Die Videos sind
+  YouTube-Einbettungen und brauchen eine Netzwerkverbindung.
+-->
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>edodeck — Demo</title>
+<!-- KaTeX ist nicht Teil von edodeck: die Seite bringt es mit (eine vendored Kopie in vendor/katex). edodeck nutzt das Global window.katex für [data-tex]; ohne bleiben Formeln leer. -->
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<script src="vendor/katex/katex.min.js"></script>
+<link rel="stylesheet" href="../dist/edodeck.css">
+<link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+
+<div id="viewport">
+  <div id="stage" class="res-1080p">
+    <div id="deck">
+
+      <section class="slide" data-music="beach-groovin"
+                data-notes="Begrüßung, Ziel der Präsentation in einem Satz nennen. data-music startet hier einen Musiktrack, der zur Hintergrundbild-Folie hin- und wieder zurück-crossfaded.">
+        <h1>edodeck, v0</h1>
+        <p>HTML als Basis, edodeck lädt nach und macht Slides daraus. Die Auflösung wird aus der Stage ausgelesen.</p>
+      </section>
+
+      <section class="slide" data-bg="accent" data-duration="4000" data-transition="zoom"
+                data-notes="Diese Folie hat einen 4-Sekunden-Auto-Advance-Timer. Kurz stehen lassen, dann läuft es automatisch weiter. Übergang: zoom.">
+        <h1>Auto-Advance</h1>
+        <p>Diese Folie hat <code>data-duration="4000"</code> und springt nach 4 s automatisch weiter. Der Timer-Ring ist unten links.</p>
+      </section>
+
+      <section class="slide" data-bg="warn" data-transition="rise"
+                data-notes="Hier auf das Mount/Unmount-Prinzip eingehen: Das Element wird erst aktiv geladen und beim Verlassen sauber entladen. Touch-freundlich per Pointer Events. Übergang: rise.">
+        <h1>Dynamisches Element</h1>
+        <p>Läuft selbstständig (Canvas + rAF), Tippen ändert die Farbe. Aufräumen beim Verlassen der Folie.</p>
+        <div class="mount-box" data-mount="demo-orbit" data-script-id="demo1">
+          <canvas></canvas>
+          <div class="hint">antippen zum Farbwechsel</div>
+        </div>
+      </section>
+
+      <section class="slide" data-transition="fade" data-notes="KaTeX-Beispiel — die Formel wird beim Laden der Seite einmalig gerendert. Übergang: fade.">
+        <h1>Mathematik</h1>
+        <p>Formeln über KaTeX, eingebettet als <code>data-tex</code>-Attribut.</p>
+        <div class="math-block" data-tex="x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}"></div>
+      </section>
+
+      <section class="slide" data-notes="Punkte einzeln per Weiter aufdecken, erst danach zur nächsten Folie springen. data-sound auf jedem Punkt spielt beim Aufdecken einen (synthetisierten) Klick.">
+        <h1>Schrittweise Liste</h1>
+        <p>Jeder Punkt erscheint einzeln bei „Weiter“ — erst wenn alle sichtbar sind, springt Weiter zur nächsten Folie.</p>
+        <ul data-reveal="sequence">
+          <li data-sound="click">Erster Gedanke</li>
+          <li data-sound="click">Darauf aufbauend der zweite</li>
+          <li data-sound="click">Und die Schlussfolgerung</li>
+        </ul>
+      </section>
+
+      <section class="slide" data-transition="none"
+                data-notes="data-order steuert die Aufdeck-Reihenfolge unabhängig von der Position im Markup (siehe core/fragments.ts). Punkte ohne data-order behalten ihre DOM-Position als Standard; hier haben aber alle drei ein explizites data-order.">
+        <h1>Aufdeck-Reihenfolge (data-order)</h1>
+        <p>Reihenfolge im Markup: 3 → 1 → 2. Reihenfolge beim Aufdecken: <code>data-order</code> 0 → 1 → 2.</p>
+        <ul data-reveal="sequence">
+          <li data-order="2">Steht im Markup an dritter Stelle — <code>data-order="2"</code>, erscheint zuletzt</li>
+          <li data-order="0">Steht im Markup an erster Stelle — <code>data-order="0"</code>, erscheint zuerst</li>
+          <li data-order="1">Steht im Markup an zweiter Stelle — <code>data-order="1"</code>, erscheint als zweites</li>
+        </ul>
+      </section>
+
+      <section class="slide" data-transition="none"
+                data-notes="Verschiedene Fragment-Varianten aus src/styles/reveal.css — jeder Punkt trägt nur eine zusätzliche Klasse, setupFragments() erkennt jedes Kind automatisch, keine JavaScript-Änderung pro Variante nötig.">
+        <h1>Fragment-Varianten</h1>
+        <p>Jeder Punkt nutzt eine andere Klasse aus <code>reveal.css</code> — der Inhalt selbst braucht kein JavaScript.</p>
+        <ul data-reveal="sequence">
+          <li class="fade-up">fade-up</li>
+          <li class="fade-left">fade-left</li>
+          <li class="grow">grow</li>
+          <li class="fade-out">fade-out — startet sichtbar, verschwindet</li>
+          <li class="strike">strike — durchgestrichen beim Aufdecken</li>
+          <li class="highlight-accent">highlight-accent</li>
+          <li class="highlight-success">highlight-success</li>
+          <li class="highlight-error">highlight-error</li>
+        </ul>
+      </section>
+
+      <section class="slide" data-transition="none"
+                data-notes="fade-in-then-semi-out nutzt die .current-Markierung aus core/fragments.ts — immer der zuletzt aufgedeckte Punkt ist voll sichtbar, ältere dimmen auf 0,35 ab.">
+        <h1>Aktueller Punkt</h1>
+        <p>Ältere Punkte dimmen ab, sobald ein neuer aufgedeckt wird — nur der aktuelle bleibt voll sichtbar.</p>
+        <ul data-reveal="sequence">
+          <li class="fade-in-then-semi-out">Erster Schritt</li>
+          <li class="fade-in-then-semi-out">Zweiter Schritt</li>
+          <li class="fade-in-then-semi-out">Dritter Schritt</li>
+          <li class="fade-in-then-semi-out">Vierter Schritt</li>
+        </ul>
+      </section>
+
+      <section class="slide bg-cover bg-dim" style="--bg-src:url('background.svg')" data-music="sunset-serenade"
+                data-notes="Hintergrundbild per --bg-src, hier mit bg-cover und Dim-Overlay für Textkontrast. data-music wechselt hier per Crossfade auf den zweiten Musiktrack.">
+        <h1>Hintergrundbild</h1>
+        <p><code>class="bg-cover bg-dim"</code> + <code>style="--bg-src:url('...')"</code>. Alternativ <code>bg-contain</code> oder <code>bg-stretch</code>.</p>
+      </section>
+
+      <section class="slide" data-notes="Vorschaubild antippen — das Video lädt erst dann und geht in echtes Vollbild. Beim Verlassen des Vollbilds wird zurückgesetzt.">
+        <h1>Video, Tap-to-Play</h1>
+        <p>Zeigt das YouTube-Vorschaubild, lädt das Video erst beim Antippen und wechselt dabei in echtes Vollbild.</p>
+        <div class="yt-embed" data-yt="aqz-KE-bpKQ" data-yt-mode="click"></div>
+      </section>
+
+      <section class="slide" data-notes="Dieses Video startet automatisch (stumm, wegen der Browser-Autoplay-Policy), sobald die Folie aktiv wird — und stoppt beim Verlassen.">
+        <h1>Video, Auto-Play</h1>
+        <p>Startet automatisch beim Öffnen der Folie, stoppt beim Verlassen. Browser erlauben Autoplay nur stumm — Ton müsste per Tap aktiviert werden.</p>
+        <div class="yt-embed" data-yt="aqz-KE-bpKQ" data-yt-mode="auto"></div>
+      </section>
+
+      <section class="slide" data-notes="Abschluss — offene Punkte nennen: Presenter-View, weitere Slide-Typen.">
+        <h1>Ende der Preview</h1>
+        <p>Pfeiltasten / Scrollen / Wischen zur Navigation. <kbd>N</kbd> zeigt die Sprechernotizen.</p>
+      </section>
+
+    </div>
+
+    <!-- Die Oberfläche um die Folien — Zeichenfläche und Toolbar, FAB-Menü, Fortschrittsbalken, Punkte, Timer-Ring, Notizen-Panel — gehört nicht ins Markup: EdoDeck.init() erzeugt sie. -->
+  </div>
+</div>
+
+<a id="lang-switch" href="demo.html" hreflang="en" lang="en">English</a>
+<button id="theme-toggle" type="button" aria-label="Theme wechseln">Theme: auto</button>
+
+<script src="../dist/edodeck.global.js"></script>
+<script src="./demo.js"></script>
+
+</body>
+</html>

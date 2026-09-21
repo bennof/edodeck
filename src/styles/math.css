@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* Color for the page's KaTeX, adapted to the theme */
+.math-block {
+  margin-top: 24px;
+  font-size: 26px;
+  color: var(--edodeck-foreground);
+}
+.math-block .katex {
+  color: var(--edodeck-foreground);
+}

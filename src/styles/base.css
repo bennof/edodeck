@@ -1,0 +1,219 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+:root {
+  /* Fixed design canvas: every measurement inside a slide is defined in px
+     relative to this. JS computes the global scale factor. Color tokens
+     live in theme.css. */
+  --slide-w: 1280;
+  --slide-h: 720;
+}
+
+/* Only touches the deck's own markup — this stylesheet also gets loaded into
+   pages that merely embed a deck. */
+#viewport,
+#viewport *,
+#viewport *::before,
+#viewport *::after {
+  box-sizing: border-box;
+}
+
+/* Default (fullscreen) mode: the deck owns the whole page. In inline mode
+   the host page keeps its own scrolling, margins and colors, so these page
+   rules only apply while a non-inline #viewport is present. */
+html:has(#viewport:not(.inline)),
+body:has(#viewport:not(.inline)) {
+  margin: 0;
+  height: 100%;
+  background: var(--edodeck-backdrop);
+  color: var(--edodeck-foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* ---- Viewport: the real, unscaled screen area ---- */
+#viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--edodeck-backdrop);
+}
+
+/* Inline mode: embeds the deck as a normal in-flow element (e.g. one
+   section on a larger page) instead of taking over the whole browser
+   viewport. Sizes itself to its container's width and derives a height from
+   the stage's own aspect ratio (--slide-w/--slide-h), like a video embed —
+   watchStageScale() in core/stage.ts then fits/letterboxes the stage inside
+   whatever box that resolves to, same as it does for the window in
+   fullscreen mode. See chrome.css for how #progress/#dots/#timer-ring/
+   #notes-debug (children of #viewport, not the window) adapt too. */
+#viewport.inline {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  aspect-ratio: var(--slide-w) / var(--slide-h);
+}
+
+/* Real (OS/browser) fullscreen, triggered via the fab menu's fullscreen
+   action (index.ts calls viewport.requestFullscreen(), not
+   document.documentElement.requestFullscreen()). The UA fullscreen styles
+   force #viewport itself to fill the screen, but if the stage's aspect
+   ratio doesn't exactly match the screen's, watchStageScale() letterboxes
+   it — that unoccupied strip should read as black regardless of the
+   current light/dark theme, the same convention video players and
+   presentation software use, not the themed --edodeck-backdrop. ::backdrop
+   covers browsers that render any gap behind the fullscreen element instead
+   of stretching it to fill exactly. */
+#viewport:fullscreen,
+#viewport::backdrop {
+  background: #000;
+}
+
+/* ---- Stage: fixed canvas, centered & scaled by JS. JS reads the target
+   resolution at runtime from this element's --slide-w/--slide-h — controlled
+   via the classes below or directly via an inline style on #stage. ---- */
+#stage {
+  width: calc(var(--slide-w) * 1px);
+  height: calc(var(--slide-h) * 1px);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: var(--edodeck-background);
+  transform-origin: center center;
+  box-shadow: 0 0 0 1px var(--edodeck-border);
+}
+
+/* Standard resolutions — just set as a class on #stage */
+.res-720p {
+  --slide-w: 1280;
+  --slide-h: 720;
+}
+.res-1080p {
+  --slide-w: 1920;
+  --slide-h: 1080;
+}
+.res-4k {
+  --slide-w: 3840;
+  --slide-h: 2160;
+}
+.res-4-3 {
+  --slide-w: 1024;
+  --slide-h: 768;
+}
+
+#deck {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  /* The deck scrolls between slides (snap), but navigation is via keys, the
+     menu and swipes — the scrollbar would only show up as a stripe at the
+     right edge of the stage. */
+  scrollbar-width: none;
+}
+#deck::-webkit-scrollbar {
+  display: none;
+}
+
+.slide {
+  height: 100%;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 80px 96px;
+  position: relative;
+}
+
+/* All sizes are fixed px, relative to the 1280x720 canvas. Scaling to the
+   real screen size is handled by JS on the stage element. */
+.slide h1 {
+  font-size: 56px;
+  margin: 0 0 18px 0;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.slide p {
+  font-size: 22px;
+  color: var(--edodeck-muted);
+  max-width: 42ch;
+  line-height: 1.5;
+}
+
+.slide[data-bg='accent'] {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--edodeck-accent) 20%, var(--edodeck-background)),
+    var(--edodeck-background) 70%
+  );
+}
+.slide[data-bg='warn'] {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--edodeck-error) 20%, var(--edodeck-background)),
+    var(--edodeck-background) 70%
+  );
+}
+
+/* ---- Background image: the URL comes in via an inline-style CSS variable
+   (style="--bg-src:url('...')"), sizing via a modifier class.
+   background-image always sits automatically behind the slide content — no
+   z-index/JS needed.
+
+   Registering --bg-src as a <url> makes a relative URL resolve against the
+   page (where the inline style is), not against this stylesheet — as it
+   would for an unregistered custom property. Browsers without @property
+   support fall back to the latter, where an absolute URL is needed. ---- */
+@property --bg-src {
+  syntax: '<url> | none';
+  inherits: false;
+  initial-value: none;
+}
+.slide {
+  background-image: var(--bg-src, none);
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.slide.bg-cover {
+  background-size: cover;
+} /* fills the area, may crop */
+.slide.bg-contain {
+  background-size: contain;
+} /* fits entirely, may letterbox */
+.slide.bg-stretch {
+  background-size: 100% 100%;
+} /* fills exactly, may distort */
+
+/* The dimming layer below is always dark, whatever the theme — so the text
+   on top of it is always light. */
+.slide.bg-dim {
+  color: var(--edodeck-chrome-fg);
+}
+.slide.bg-dim p {
+  color: color-mix(in srgb, var(--edodeck-chrome-fg) 78%, transparent);
+}
+
+/* Optional dimming for text contrast — strength overridable via
+   style="--bg-overlay:0.6", default 0.45 */
+.slide.bg-dim::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--bg-overlay, 0.45));
+  z-index: -1;
+  pointer-events: none;
+}
+
+kbd {
+  background: color-mix(in srgb, var(--edodeck-foreground) 8%, transparent);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.85em;
+}

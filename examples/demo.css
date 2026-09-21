@@ -1,0 +1,71 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* Demo-specific: styling for the example mount "demo-orbit" (see demo.js and
+   the "Dynamic element" slide). Not part of the library — it only illustrates
+   the mount/unmount registry. */
+.mount-box {
+  margin-top: 32px;
+  width: 520px;
+  height: 220px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  position: relative;
+  touch-action: manipulation;
+}
+.mount-box canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mount-box .hint {
+  position: absolute;
+  bottom: 10px;
+  left: 14px;
+  font-size: 13px;
+  color: var(--edodeck-muted);
+  pointer-events: none;
+}
+
+/* Theme toggle — demo-only chrome, deliberately outside the library's own
+   DOM, to show the .light/.dark manual-override mechanism from a host
+   page's perspective (see src/styles/theme.css). Colored with edodeck's own
+   theme tokens so the button visibly reflects whichever mode is active. */
+#theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 40;
+  font: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--edodeck-border);
+  background: var(--edodeck-background);
+  color: var(--edodeck-foreground);
+  cursor: pointer;
+}
+#theme-toggle:hover {
+  border-color: var(--edodeck-accent);
+}
+
+/* Language switch — demo-only, next to the theme toggle. */
+#lang-switch {
+  position: fixed;
+  top: 20px;
+  right: 150px;
+  z-index: 40;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--edodeck-border);
+  background: var(--edodeck-background);
+  color: var(--edodeck-foreground);
+  text-decoration: none;
+}
+#lang-switch:hover {
+  border-color: var(--edodeck-accent);
+}

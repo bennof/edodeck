@@ -1,0 +1,113 @@
+/*
+ * Copyright (c) 2026 Benjamin Benno Falkner
+ * SPDX-License-Identifier: MIT
+ */
+
+/* ---- YouTube embed: thumbnail (YouTube's own) as background-image; the
+   real iframe is added only on demand (tap for data-yt-mode="click", or
+   automatically when the slide becomes active for data-yt-mode="auto"). Runs
+   on the same mount/unmount lifecycle as the other dynamic elements — the
+   video is stopped cleanly on leaving the slide instead of continuing to
+   play offscreen. ---- */
+.yt-embed {
+  margin-top: 28px;
+  width: 640px;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-color: #000;
+}
+.yt-embed[data-yt-mode='click'] {
+  cursor: pointer;
+}
+
+.yt-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.15);
+}
+.yt-play-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.yt-play-circle svg {
+  width: 26px;
+  height: 26px;
+  margin-left: 3px;
+}
+.yt-embed.yt-playing .yt-play {
+  display: none;
+}
+
+.yt-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.yt-embed:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+.yt-embed:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.yt-auto-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--edodeck-chrome-muted);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 3px 8px;
+  border-radius: 4px;
+  z-index: 1;
+}
+
+/* ---- Print fallback: the video isn't playable in print (see @media print
+   in print.css), so a QR code linking to the video URL replaces the empty
+   area. Structure/layout lives here; print.css controls actual visibility
+   (same pattern as .print-annotation-layer). */
+.yt-print-qr {
+  display: none;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #fff;
+}
+.yt-print-qr-code {
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+.yt-print-qr-code svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.yt-print-caption {
+  font-size: 13px;
+  color: #222;
+  word-break: break-all;
+}
