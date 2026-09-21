@@ -1,6 +1,6 @@
 {
   "name": "edodeck",
-  "version": "0.0.1",
+  "version": "0.0.1-rc.2",
   "description": "Presentation library: an HTML/CSS/JS slide deck that can be embedded into any document via <script>+<link>.",
   "type": "module",
   "main": "dist/edodeck.esm.js",
@@ -18,7 +18,8 @@
     "dev": "node esbuild.config.mjs --watch --serve",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node --test tests/*.test.mjs",
+    "mkversion": "git commit -a -m \"Release v$(node -p \"require('./package.json').version\")\" && git tag v$(node -p \"require('./package.json').version\") && git push origin HEAD --follow-tags"
   },
   "keywords": [],
   "author": "Benjamin Benno Falkner <bennof@falkner.xyz>",
