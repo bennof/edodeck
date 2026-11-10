@@ -64,7 +64,7 @@
   --edodeck-backdrop: color-mix(in srgb, var(--edodeck-background) 88%, black);
 
   /* Floating UI chrome (FAB menu, annotate toolbar, notes panel, progress,
-     dots, timer ring) is deliberately NOT part of this theme: it overlays
+     timer ring) is deliberately NOT part of this theme: it overlays
      arbitrary slide content, which can be bright even on an otherwise dark
      deck, so it always stays a fixed dark-glass overlay for legibility —
      the same reasoning a video player's control bar follows. */

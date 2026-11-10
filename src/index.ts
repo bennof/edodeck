@@ -53,7 +53,7 @@ function required<T extends Element>(root: ParentNode, selector: string): T {
 /**
  * Wires up existing deck markup into a working presentation. The markup only
  * needs #viewport > #stage > #deck > .slide (see examples/demo.html); the UI
- * around it (drawing layer, FAB menu, progress, dots, ...) is generated
+ * around it (drawing layer, FAB menu, progress, ...) is generated
  * here. (The markup itself will later be generated server-side from the
  * shared JSON intermediate state.)
  */
@@ -64,11 +64,11 @@ export function init(options: InitOptions = {}): EdoDeck {
   const stage = required<HTMLElement>(root, '#stage');
   const deckEl = required<HTMLElement>(root, '#deck');
   const slides = [...deckEl.querySelectorAll<HTMLElement>('.slide')];
-  // Canvas, toolbar, FAB menu, progress, dots, timer ring and notes panel are
+  // Canvas, toolbar, FAB menu, progress, timer ring and notes panel are
   // generated here — they're UI, not content, so they don't belong in the
   // slide markup (unless the markup provides one itself, which is then used).
   const chrome = ensureChrome(viewport, stage);
-  const { dotsContainer, progressBar, timerRing, timerFill, notesDebug, annotateCanvas } = chrome.elements;
+  const { progressBar, timerRing, timerFill, notesDebug, annotateCanvas } = chrome.elements;
 
   const stopStageScale = watchStageScale(stage);
 
@@ -83,7 +83,7 @@ export function init(options: InitOptions = {}): EdoDeck {
   const sound = options.sound ? setupSound(options.sound) : null;
 
   const deck = createDeck(
-    { deck: deckEl, slides, dotsContainer, progressBar, timerRing, timerFill },
+    { deck: deckEl, slides, progressBar, timerRing, timerFill },
     notes,
     annotation,
     sound

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 // The deck's UI chrome — drawing canvas and toolbar, FAB menu, progress bar,
-// dots, timer ring, notes panel — is not content, so it is not part of the
+// timer ring, notes panel — is not content, so it is not part of the
 // slide markup. init() calls ensureChrome() to generate whatever is missing
 // inside #viewport (markup that already provides an element is used as is).
 
@@ -78,7 +78,6 @@ function button(className: string, label: string, shapes: Shape[], attrs: Record
 
 export interface ChromeElements {
   annotateCanvas: HTMLCanvasElement;
-  dotsContainer: HTMLElement;
   progressBar: HTMLElement;
   timerRing: SVGSVGElement;
   timerFill: SVGCircleElement;
@@ -144,8 +143,6 @@ export function ensureChrome(viewport: HTMLElement, stage: HTMLElement): Chrome 
   const progress = ensure(viewport, '#progress', () => el('div', { id: 'progress' }, [el('div', { id: 'progress-bar' })]));
   const progressBar = progress.querySelector<HTMLElement>('#progress-bar') ?? progress.appendChild(el('div', { id: 'progress-bar' }));
 
-  const dotsContainer = ensure(viewport, '#dots', () => el('div', { id: 'dots' }));
-
   const timerRing = ensure(viewport, '#timer-ring', () => {
     const ring = svgEl('svg', { id: 'timer-ring', viewBox: '0 0 36 36' }) as SVGSVGElement;
     ring.append(
@@ -159,5 +156,5 @@ export function ensureChrome(viewport: HTMLElement, stage: HTMLElement): Chrome 
 
   const notesDebug = ensure(viewport, '#notes-debug', () => el('div', { id: 'notes-debug' }));
 
-  return { elements: { annotateCanvas, dotsContainer, progressBar, timerRing, timerFill, notesDebug }, created };
+  return { elements: { annotateCanvas, progressBar, timerRing, timerFill, notesDebug }, created };
 }

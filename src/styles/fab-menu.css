@@ -16,14 +16,14 @@
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   transform-origin: bottom right;
   transform: scale(var(--stage-counter-scale, 1));
 }
 
 .fab-btn {
-  width: 46px;
-  height: 46px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(24, 24, 30, 0.75);
@@ -37,8 +37,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 .fab-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 #fab-toggle {
@@ -56,7 +56,7 @@
 #fab-items {
   display: flex;
   flex-direction: row-reverse;
-  gap: 12px;
+  gap: 10px;
 }
 #fab-items .fab-btn {
   opacity: 0;

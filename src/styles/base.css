@@ -47,7 +47,7 @@ body:has(#viewport:not(.inline)) {
    the stage's own aspect ratio (--slide-w/--slide-h), like a video embed —
    watchStageScale() in core/stage.ts then fits/letterboxes the stage inside
    whatever box that resolves to, same as it does for the window in
-   fullscreen mode. See chrome.css for how #progress/#dots/#timer-ring/
+   fullscreen mode. See chrome.css for how #progress/#timer-ring/
    #notes-debug (children of #viewport, not the window) adapt too. */
 #viewport.inline {
   position: relative;

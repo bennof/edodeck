@@ -18,7 +18,6 @@ import type { NotesPanel } from './notes';
 export interface DeckElements {
   deck: HTMLElement;
   slides: HTMLElement[];
-  dotsContainer: HTMLElement;
   progressBar: HTMLElement;
   timerRing: SVGSVGElement;
   timerFill: SVGCircleElement;
@@ -40,7 +39,7 @@ export interface Deck {
 }
 
 /**
- * Central deck state: navigation (advance/retreat/goTo), dots, progress bar,
+ * Central deck state: navigation (advance/retreat/goTo), progress bar,
  * and the IntersectionObserver that derives the active index from the
  * scroll-snap deck. advance()/retreat() first reveal/hide any open fragments
  * on the current slide before jumping to the neighboring slide — free
@@ -52,18 +51,10 @@ export function createDeck(
   annotation: AnnotationLayer,
   hooks: DeckHooks = {}
 ): Deck {
-  const { deck, slides, dotsContainer, progressBar, timerRing, timerFill } = els;
+  const { deck, slides, progressBar, timerRing, timerFill } = els;
   let current = 0;
 
   slides.forEach(setupFragments);
-
-  const dotEls = slides.map((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'dot';
-    dot.addEventListener('click', () => goTo(i));
-    dotsContainer.appendChild(dot);
-    return dot;
-  });
 
   const autoAdvance = createAutoAdvance(timerRing, timerFill, () => advance());
 
@@ -123,7 +114,6 @@ export function createDeck(
     current = index;
     const slide = slides[index]!;
 
-    dotEls.forEach((d, i) => d.classList.toggle('active', i === index));
     slides.forEach((s, i) => s.classList.toggle('slide-active', i === index));
     progressBar.style.width = ((index + 1) / slides.length) * 100 + '%';
     notes.update(slide);
